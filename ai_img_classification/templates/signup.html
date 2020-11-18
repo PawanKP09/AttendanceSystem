@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+      <link rel='stylesheet' href="{% static 'css/login.css' %}" />
+<style>
+    .dimensional-form .page-header *,.dimensional-form p{color:#5b676f !important;}
+        .dimensional-form input[type=email],
+    .dimensional-form input[type=text],
+    .dimensional-form input[type=tel],
+    .dimensional-form input[type=password],
+
+     .dimensional-form select{
+    outline:none !important;
+    }
+    .dimensional-form input[type=password], .dimensional-form input[type=text], .dimensional-form input[type=tel], .dimensional-form select {
+    border-bottom: 1px solid #91918d;
+    color: #5b676f;
+    width: 100%;
+    background-color: transparent;
+    padding-left: 1px;
+    font-family: "Avenir LT Book";
+    font-size: 1rem;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    }
+    .dimensional-form .currentactive input[type=password]{
+    font-size:0.8rem;
+    top:-19px;
+    }
+    .label-class{
+    font-size: 0.8rem;
+    top: -19px;
+    }
+    .label-classs{
+    font-size: 1rem;
+    top: 0px;
+    }
+</style>
+</head>
+
+
+
+<div class="container">
+
+    <form class="col-md-4 col-md-offset-4 col-sm-12 col-sm-offset-0 dimensional-form" id="signup_form"
+          novalidate>
+        <input type='hidden' name='csrfmiddlewaretoken' value='DWdVnXwHjx1SJjSxLcWJhMf3nG75Ef3T4nzTDaoPlLIHcF6ABBnvlVtUUHIlFS0v' />
+        <div class="page-header" style="text-align: center">
+            <H2>SignUp</H2>
+            <p>Please Fill This Form</p>
+        </div>
+        {% csrf_token %}
+
+        <div class="required-field  form-group">
+            <input
+                    id="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_2__Id"
+                    name="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[1].Id" type="hidden"
+                    value="{9288E22A-1BF5-412D-8004-5A0CEF73146F}"/>
+            <label class="control-label"
+                   for="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_2__Value">First Name
+            </label><input type="text" name="first_name" maxlength="30" id="id_first_name" /><span class="field-validation-valid help-block"
+                                               data-valmsg-for="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[2].Value"
+                                               data-valmsg-replace="true"></span>
+        </div>
+
+
+        <div class="required-field  form-group">
+            <input
+                    id="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_3__Id"
+                    name="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[3].Id" type="hidden"
+                    value="{9288E22A-1BF5-412D-8004-5A0CEF73146F}"/>
+            <label class="control-label"
+                   for="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_3__Value">Last Name
+            </label><input type="text" name="last_name" maxlength="30" id="id_last_name" /><span class="field-validation-valid help-block"
+                                              data-valmsg-for="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[2].Value"
+                                              data-valmsg-replace="true"></span>
+        </div>
+
+
+
+        <div class="required-field  form-group" >
+            <input
+                    id="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_4__Id"
+                    name="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[4].Id" type="hidden"
+                    value="{9288E22A-1BF5-412D-8004-5A0CEF73146F}"/>
+            <label class="control-label"
+                   for="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_4__Value">Email
+            </label><input type="email" name="email" maxlength="254" id="id_email" /><span class="field-validation-valid help-block"
+                                          data-valmsg-for="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[2].Value"
+                                          data-valmsg-replace="true"></span>
+        </div>
+
+
+        <div class="required-field  form-group" id="password"><input
+                        id="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_5__Id"
+                        name="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[3].Id" type="hidden"
+                        value="{8A5339C3-1A8E-4A73-96A8-58ECF0970E6C}" />
+                        <label  id = "label" class="control-label"
+                        for="id_password">Password</label>
+
+                        <input type="password" id="id_password" name="password" onfocusout="removeClass()" onfocus="addClass()">
+                        <span class="field-validation-valid help-block"
+                        data-valmsg-for="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[3].Value"
+                        data-valmsg-replace="true"></span>
+
+
+                    </div>
+
+
+<!--        <div class="required-field  form-group" id="confirm_password"><input-->
+<!--                id="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_6__Id"-->
+<!--                name="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[5].Id" type="hidden"-->
+<!--                value="{8A5339C3-1A8E-4A73-96A8-58ECF0970E6C}"/><label id="label2" class="control-label"-->
+<!--                                                                       for="wffm14ea8a91418a4beda1bae52dc9452f60_Sections_0__Fields_5__Value">Confirm Password</label><input-->
+<!--                class=" form-control text-box single-line" data-val="true"-->
+<!--                id="id_confirm_password"-->
+<!--                name="confirm_password" placeholder=""-->
+<!--                style="" onfocus="addClass2()" onfocusout="removeClass2()" type="password"/><span class="field-validation-valid help-block"-->
+<!--                                             data-valmsg-for="wffm14ea8a91418a4beda1bae52dc9452f60.Sections[0].Fields[3].Value"-->
+<!--                                             data-valmsg-replace="true"></span>-->
+<!--        </div>-->
+
+            <div class="required-field  form-group" style="margin-top: 20px">
+                            <span style="float: right">
+                                <a href="/account/login/" class="txtBlue"> Already have an account?</a>
+                                 </span>
+
+            </div>
+
+            <div class="form-submit-border" style="margin-top:23px !important;">
+                <input class="btn  btn-default  btn-submit" type="submit"
+                       value="Submit"/>
+            </div>
+
+    </form>
+
+</div>
+<script>
+function addClass() {
+
+
+  $('#password').addClass("currentactive");
+  $('#password').addClass("border");
+  $('#label').addClass("label-class");
+
+}
+function removeClass() {
+
+
+  if ($('#id_password').val()){
+
+       $('#password').removeClass("currentactive");
+       $('#password').removeClass("border");
+
+
+
+
+    }
+   else{
+         $('#password').removeClass("currentactive");
+         $('#label').removeClass("label-class");
+
+
+
+     }
+
+
+}
+function addClass2() {
+
+
+  $('#confirm_password').addClass("currentactive");
+  $('#label2').addClass("label-class");
+
+}
+function removeClass2() {
+
+
+ if ($('#id_confirm_password').val()){
+
+       $('#confirm_password').removeClass("currentactive");
+       $('#confirm_password').removeClass("border");
+
+
+
+
+    }
+   else{
+         $('#confirm_password').removeClass("currentactive");
+         $('#label2').removeClass("label-class");
+
+
+
+     }
+
+}
+$("#signup_form").submit(function(e) {
+       e.preventDefault();
+       var formData = new FormData(this);
+       $.ajax({
+       url : "{% url 'signup' %}",
+       type : "POST",
+       data : formData,
+       dataType:'json',
+       contentType: false,
+       processData: false,
+           success : function(data) {
+           console.log(data);
+               if (data.result != "success")
+                {
+                 response = data.result;
+                 $('.error1').html(response);
+               }
+               else{
+               window.location.href = '{% url 'dashboard' %}';
+                   }
+
+            },
+           // handle a non-successful response
+           error : function(xhr,errmsg,errors) {
+           console.log(xhr.status + ": " + xhr.responseText);
+           console.log(errors)// provide a bit more info about the error to the console
+           }
+       });
+   });
+</script>
+{% endblock %}

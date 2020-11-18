@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="container-large ofh pos-rel bg-white no-padding bg-color">
+    <div class="trackable" data-component-name="Audience Hero" data-content-name="TDIF Hero">
+        <div class="container m-top ">
+                <div class="row center">
+                    <div class="col-md-6 col-sm-12 webcam ">
+                        <div class="webcam-container">
+                            <video id="video" class="webcam-container" autoplay="true"></video>
+                        </div>
+                        <p>
+                        <div>
+                            <span id="camera" onclick="toggleFunction();"><i class="fa fa-play pointer"
+                                                                          aria-hidden="true"></i></span>
+                            <span onclick="snapshot();"><i class="fa fa-camera pointer" aria-hidden="true"></i></span>
+                        </div>
+                        </p>
+                    </div>
+                    <form id="img-upload-form" enctype="multipart/form-data" class="{% if request.GET.multiple %} hidden {% endif %}">
+                        {% csrf_token %}
+                    <div class="col-md-4 col-sm-12">
+                        <canvas id="myCanvas" class="hidden" width="250" height="250"></canvas>
+                        <p>Screenshots :</p>
+                        <div id="image" class="image-container1 hidden">
+                            <div class="col-md-12 col-sm-12" id="class1">
+
+                            </div>
+                        </div>
+<!--                        modal-->
+                        <!-- The Modal -->
+                        <div id="myModal" class="modal">
+                          <span class="close">&times;</span>
+                            <span class="trash"><i class="fa fa-trash"  onclick="deleteImg(this.id);"></i></span>
+                          <img class="modal-content" id="img01">
+                          <div id="caption"></div>
+                        </div>
+                        <div class="form-inline top-margin">
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 pt-top">Name*</label>
+                                <input type="text" id="name" name="name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-inline top-margin">
+                            <div class="form-group">
+                                <label for="uid" class="col-sm-2 pt-top">Uid*</label>
+                                <input type="text" id="uid" name="uid" class="form-control">
+                            </div>
+                        </div>
+                        <div id="error" class="hidden"></div>
+<!--                        <div id="success" style="color:green;"></div>-->
+                        <div class="form-group {% if request.GET.multiple %}buttons{% endif %}">
+                            <button class="button large expanded" id="submit" type="submit">Submit</button>
+                        </div>
+                    </div>
+                    </form>
+
+                    {% if request.GET.multiple %}
+                <button id="train" class="button large expanded" type="button">Train</button>
+                <button id="add_user" class="button large expanded" type="button">Add Another User</button>
+                                        <div id="success" style="color:green;"></div>
+
+                {% endif %}
+
+                </div>
+                        </div>
+    </div>
+</div>
+<script>
+var modal = document.getElementById("myModal");
+var src = '';
+function popup(id,url){
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = document.getElementById(id);
+var modalImg = document.getElementById("img01");
+  modal.style.display = "block";
+  modalImg.src = url;
+  src = url;
+  value = url.slice(70,85);
+  $('.fa-trash').attr('id', value);
+}
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+function deleteImg(string)
+{
+console.log(string);
+<!--$('.fa-trash').attr('id', "changed");-->
+<!--element1 = $("#"+string).remove();-->
+$("."+string).remove();
+$(".close").click();
+}
+
+
+$("#add_user").click(function(){
+if($("#img-upload-form").hasClass("hidden")){
+    $("#img-upload-form").removeClass("hidden");
+        $('#train').prop("disabled", true);
+
+    $("#add_user").text("Add Later");
+    }
+    else{
+
+        $("#img-upload-form").addClass("hidden");
+        $('#train').prop("disabled", false);
+
+        $("#add_user").text("Add Another User");
+            $("#train").removeAttr("disabled");
+    }
+});
+
+       var toggle = true;
+
+    function toggleFunction(){
+        toggle ? startWebcam() : stopWebcam();
+        toggle = !toggle;
+}
+
+      //--------------------
+      // GET USER MEDIA CODE
+      //--------------------
+          navigator.getUserMedia = ( navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia ||
+                             navigator.msGetUserMedia);
+
+      var video;
+      var webcamStream;
+
+      function startWebcam() {
+        document.querySelector('#camera').innerHTML  = '<i class="fa fa-stop" aria-hidden="true"></i>';
+        if (navigator.getUserMedia) {
+           navigator.getUserMedia (
+
+              // constraints
+              {
+                 video: true,
+                 audio: false
+              },
+
+              // successCallback
+              function(localMediaStream) {
+                  video = document.querySelector('video');
+                 video.srcObject=localMediaStream;
+                 webcamStream = localMediaStream;
+              },
+
+              // errorCallback
+              function(err) {
+                 console.log("The following error occured: " + err);
+              }
+           );
+        } else {
+           console.log("getUserMedia not supported");
+        }
+      }
+
+      function stopWebcam() {
+        webcamStream.getTracks()[0].stop();
+        document.querySelector('#camera').innerHTML  = '<i class="fa fa-play" aria-hidden="true"></i>';
+
+        }
+      //---------------------
+      // TAKE A SNAPSHOT CODE
+      //---------------------
+      var canvas, ctx;
+
+      function init() {
+        // Get the canvas and obtain a context for
+        // drawing in it
+        canvas = document.getElementById("myCanvas");
+        ctx = canvas.getContext('2d');
+      }
+
+      function snapshot() {
+         // Draws current image from the video element into the canvas
+        canvas = document.getElementById("myCanvas");
+        ctx = canvas.getContext('2d');
+        video = document.querySelector('video');
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        var image = new Image();
+        var data = canvas.toDataURL("image/png");
+        image.src = data;
+        sliced = data.slice(70,85);
+        $('<input>').attr({
+        type: 'hidden',
+        id: 'foo',
+        class:sliced,
+        name: 'filename[]',
+        value:data
+        }).appendTo('form');
+        $("#image").removeClass("hidden");
+        $("#class1").append("<img class='" + sliced + "' onclick=popup(this.id,this.src) class='zoom' height='50px' width='50px' src='"+ data + "'></img> ")
+
+      }
+
+$("#train").click(function(){
+    var xhttp = new XMLHttpRequest();
+    $('#success').html("Training Initiated...");
+    $("#train").attr("disabled", true);
+    $("#submit").attr("disabled", true);
+
+<!--    $('.container').fadeOut(2000);-->
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           // Typical action to be performed when the document is ready:
+           console.log(xhttp.responseText);
+           var response =xhttp.responseText;
+           var jsonResponse = JSON.parse(response);
+                $('#success').html(jsonResponse["success"]);
+                setTimeout(function() {
+                        $('#success').html('');
+                        }, 5000);
+<!--           $('.container').fadeIn(2000);-->
+                 $("#train").attr("disabled", false);
+                $("#submit").attr("disabled", false);
+
+        }
+    };
+
+xhttp.open("GET", "{% url 'training' %}", true);
+xhttp.send();
+});
+
+
+$("#img-upload-form").submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+    url : "{% url 'capture-images' %}",
+    crossDomain: true,
+    type : "POST",
+    data : formData,
+    dataType:'json',
+    contentType: false,
+    processData: false,
+        success : function(data) {
+        console.log(data);
+            if (data.result != "success")
+             {
+                response = data.result;
+                $('#error').removeClass('hidden');
+                $('#error').html(response);
+             }
+             else{
+                 window.location.href = "{% url 'capture-images' %}"+"?multiple=true" ;
+                }
+         },
+        // handle a non-successful response
+        error : function(xhr,errmsg,errors) {
+        console.log(xhr.status + ": " + xhr.responseText);
+        console.log(errors)// provide a bit more info about the error to the console
+        }
+    });
+
+});
+
+
+
+
+
+
+
+</script>
+{% endblock %}

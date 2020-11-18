@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<meta http-equiv="refresh" content="10;{% url 'dashboard' %}"/>
+
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" />
+<p>Click the <strong>table headers</strong> to sort the table accordingly:</p>
+
+<div class="container-large ofh pos-rel bg-white no-padding bg-color">
+
+
+    <div class="container m-top">
+        <div id="success" class="message"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    {% if request.GET.date %}
+                    <h1>{{request.GET.date}}</h1>
+                    {% else %}
+                    <h1>Todays Attendence</h1>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 search">
+                    <form type="get" id="search_form">
+                        <input id="search_box" value="{% if request.GET.search %}{{request.GET.search}}{% endif %}" type="text" name="search" placeholder="Search...">
+                        <input type="hidden" name="date" value="{{request.GET.date|date:'Y-m-d'}}">
+                    </form>
+                </div>
+                <div class="col-md-3 icons">
+                    <div class="dropdown">
+                        <i class="fa fa-user-plus pointer add-user" aria-hidden="true"></i>
+                        <div class="dropdown-content">
+                            <a href="{% url 'capture-images' %}">Webcam Capture</a>
+                            <a href="{% url 'upload-images' %}">Upload Images</a>
+                        </div>
+                    </div>
+                    <i class="fa fa-calendar pointer add-user" aria-hidden="true"></i>
+                    <i class="fa fa-camera-retro pointer add-user" id="inference" aria-hidden="true"></i>
+                    <form id="date_form">
+                        <input type="date" name="date" id="datepicker" class="hidden" value="{{today | date:'Y-m-d' }}"
+                               value="{% if request.GET.date %}{{request.GET.date}}{% endif %}">
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <table class=" w3-table-all" id="mytable">
+            <thead>
+            <tr class="bg">
+                <th id="name">Name</th>
+                <th id="uid">Uid</th>
+                <th data-th="Driver details" id="status"><span>Attendence Status</span></th>
+                <th id="in_time">In-Time</th>
+                <th id="out_time">Out-Time</th>
+                <th id="total_hours">Total Hours</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                {% if not user.is_superuser %}
+                <td><a class="{% if not user.first_name in trained %}highlight{% endif %}"
+                       href="{% url 'user-log' user.id %}?date={% now 'Y-m-d' %}">{{user.first_name}}</a></td>
+                <td>{{user.Uid}}</td>
+                {% if user.username in todays_user %}
+                <td class="present">Present</td>
+                <td>{{ user.in_time|time }}</td>
+                <td>{{ user.out_time|time }}</td>
+                <td>{{user.total_hours}}</td>
+                <td><a href data-toggle="modal" data-target="#{{forloop.counter}}"><i
+                        class="fa fa-trash pointer"></i></a></td>
+                {% else %}
+                <td class="absent">Absent</td>
+                <td>NA</td>
+                <td>NA</td>
+                <td>NA</td>
+                <td><a href data-toggle="modal" data-target="#{{forloop.counter}}"><i
+                        class="fa fa-trash pointer"></i></a></td>
+                {% endif %}
+            </tr>
+
+            {% endif %}
+            {% empty %}
+            <tr>
+                <td colspan="7">
+                    There are no entries yet
+
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+        <a href="/export-data/?date={{request.GET.date}}&search={{request.GET.search}}"><button class="button large expanded" >Export</button></a>
+    </div>
+</div>
+{% for user in users %}
+<div id="{{forloop.counter}}" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title fa">Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text">Are you sure you want to delete the {{user.first_name}}?</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" value="{{user.id}}" name="id">
+                <button type="submit" class="btn btn-default delete" onclick="deleteuser('{{user.id}}')">Confirm
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endfor %}
+<script>
+    $(".fa-calendar").click(function(){
+    $( "#datepicker" ).removeClass('hidden');
+            	$('#datepicker').removeAttr('style');
+
+
+    $("#datepicker").focus();
+
+  });
+  $("#datepicker").focusout(function() {
+        $('#datepicker').hide();
+    });
+
+  $("#datepicker").change(function(){
+$("#date_form").submit();
+});
+
+$("#inference").click(function(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           // Typical action to be performed when the document is ready:
+           console.log(xhttp.responseText);
+           var response =xhttp.responseText;
+           var jsonResponse = JSON.parse(response);
+           console.log(jsonResponse["success"]);
+           $('.message').html(jsonResponse["success"]);
+                setTimeout(function() {
+                        $('.message').html('');
+                        }, 5000);
+
+
+           }
+    };
+
+xhttp.open("GET", "{% url 'index' %}", true);
+xhttp.send();
+});
+
+
+function deleteuser(id){
+      try {
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+               if (this.readyState == 4 && this.status == 200) {
+                      window.location = "{%url 'dashboard' %}";
+              }
+           };
+          xhr.open('GET', "http://127.0.0.1:8080/backend/delete-user/?id="+id, true);
+          xhr.send()
+       }
+       catch(error) {
+         alert(error);
+       }
+
+   }
+
+
+
+
+function sortTable(f,n){
+	var rows = $('#mytable tbody  tr').get();
+
+	rows.sort(function(a, b) {
+
+		var A = getVal(a);
+		var B = getVal(b);
+
+		if(A < B) {
+			return -1*f;
+		}
+		if(A > B) {
+			return 1*f;
+		}
+		return 0;
+	});
+
+	function getVal(elm){
+		var v = $(elm).children('td').eq(n).text().toUpperCase();
+		if($.isNumeric(v)){
+			v = parseInt(v,10);
+		}
+		return v;
+	}
+
+	$.each(rows, function(index, row) {
+		$('#mytable').children('tbody').append(row);
+	});
+}
+var f_sl = 1;
+var f_nm = 1;
+$("#name").click(function(){
+    f_sl *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_sl,n);
+});
+$("#uid").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
+$("#status").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
+$("#in_time").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
+$("#out_time").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
+$("#total_hours").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
+
+
+
+</script>
+{% endblock %}

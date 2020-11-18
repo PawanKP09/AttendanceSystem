@@ -1,0 +1,12 @@
+.idea/*
+*.idea
+*.py[co]
+media/*
+__pycache__/*
+*/__pycache__
+static/*
+.vscode/
+# python byte code files
+*.pyc
+db.sqlite3
+venv/*

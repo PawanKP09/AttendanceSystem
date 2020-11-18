@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Stream video via webcam -->
+<body onload="init();">
+<div class="container-large ofh pos-rel bg-white no-padding bg-color">
+    <div class="col-md-12 col-md-push-1 col-sm-12 col-sm-push-2 page-header-left ">
+        <div class="trackable" data-component-name="Audience Hero" data-content-name="TDIF Hero">
+            <div class="container m-top">
+                <form id="user-profile" class="{% if request.GET.multiple %} hidden {% endif %}"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-inline top-margin">
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 pt-top">Name*</label>
+                            <input type="text" id="name" name="name" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-inline top-margin">
+                        <div class="form-group">
+                            <label for="uid" class="col-sm-2 pt-top">Uid*</label>
+                            <input type="text" id="uid" name="uid" class="form-control">
+                        </div>
+                    </div>
+                    <div class="grid-x grid-padding-x select">
+                        <div class="row">
+                            <div class="small-10 small-offset-1 medium-8 medium-offset-2 cell">
+                                <div class="form-group">
+                                    <label for="upload_imgs" class="button hollow ml-left">Select Your Images +</label>
+                                    <input class="show-for-sr hidden form-control" type="file" id="upload_imgs"
+                                           name="upload_imgs[]" multiple/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="quote-imgs-thumbs quote-imgs-thumbs--hidden ml-left" id="img_preview"
+                                 aria-live="polite">
+                            </div>
+                        </div>
+                        <div id="error"></div>
+                        <p>
+                        <div class="form-group">
+                            <button class="button large expanded" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="form-group">
+                    {% if request.GET.multiple %}
+                    <button id="train" class="button large expanded" type="button">Train</button>
+                    <button id="add_user" class="button large expanded" type="button">Add Another User</button>
+                    {% endif %}
+                </div>
+                <div id="success" class="success"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+$("#add_user").click(function(){
+
+if($("#user-profile").hasClass("hidden")){
+    $("#user-profile").removeClass("hidden");
+        $('#train').prop("disabled", true);
+
+    $("#add_user").text("Add Later");
+    }
+    else{
+        $("#user-profile").addClass("hidden");
+        $('#train').prop("disabled", false);
+        $("#add_user").text("Add Another User");
+            $("#train").removeAttr("disabled");
+    }
+});
+
+    $("#user-profile").submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+    url : "{% url 'upload-images' %}",
+    type : "POST",
+    crossDomain: true,
+    data : formData,
+    dataType:'json',
+    contentType: false,
+    processData: false,
+        success : function(data) {
+        console.log(data);
+            if (data.result != "success")
+             {
+                response = data.result;
+                $('#error').html(response);
+             }
+             else{
+                 window.location.href = "{% url 'upload-images' %}"+"?multiple=true" ;
+<!--                $.ajax({-->
+<!--                    url : "http://127.0.0.1:8080/backend/training",-->
+<!--                    type: "GET",-->
+<!--                    success: function() {-->
+<!--                        console.log("success");-->
+<!--                    }-->
+<!--                });-->
+              }
+         },
+        // handle a non-successful response
+        error : function(xhr,errmsg,errors) {
+        console.log(xhr.status + ": " + xhr.responseText);
+        console.log(errors)// provide a bit more info about the error to the console
+        }
+    });
+
+});
+
+    var imgUpload = document.getElementById('upload_imgs')
+  , imgPreview = document.getElementById('img_preview')
+  , imgUploadForm = document.getElementById('user-profile')
+  , totalFiles
+  , previewTitle
+  , previewTitleText
+  , img;
+
+imgUpload.addEventListener('change', previewImgs, false);
+<!--imgUploadForm.addEventListener('submit', function (e) {-->
+<!--  e.preventDefault();-->
+<!--  alert('Images Uploaded! (not really, but it would if this was on your website)');-->
+<!--}, false);-->
+
+
+$("#train").click(function(){
+    var xhttp = new XMLHttpRequest();
+    $('#success').html("Training Initiated...");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           // Typical action to be performed when the document is ready:
+           console.log(xhttp.responseText);
+           var response =xhttp.responseText;
+           var jsonResponse = JSON.parse(response);
+                $('#success').html(jsonResponse["success"]);
+                setTimeout(function() {
+                        $('#success').html('');
+                        }, 5000);
+
+
+        }
+    };
+
+xhttp.open("GET", "{% url 'training' %}", true);
+xhttp.send();
+});
+function previewImgs(event) {
+  totalFiles = imgUpload.files.length;
+
+  if(!!totalFiles) {
+    imgPreview.classList.remove('quote-imgs-thumbs--hidden');
+    previewTitle = document.createElement('p');
+    previewTitle.style.fontWeight = 'bold';
+    previewTitleText = document.createTextNode(totalFiles + ' Total Images Selected');
+    previewTitle.appendChild(previewTitleText);
+    imgPreview.appendChild(previewTitle);
+  }
+
+  for(var i = 0; i < totalFiles; i++) {
+    img = document.createElement('img');
+    img.src = URL.createObjectURL(event.target.files[i]);
+    img.classList.add('img-preview-thumb');
+    imgPreview.appendChild(img);
+  }
+}
+
+
+
+</script>
+{% endblock %}

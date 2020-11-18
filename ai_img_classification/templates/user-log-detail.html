@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-large ofh pos-rel bg-white no-padding bg-color">
+    <div class="container m-top">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>{{user.first_name}}'s Attendence History</h1><h4>User added on :{{created}}</h4>
+                <a href data-toggle="modal" data-target="#images">view user-images</a>
+            </div>
+            <!--                <div class="col-md-4">-->
+            <!--                    <form id="date_form">-->
+            <!--                        <div class="form-group">-->
+            <!--                            <input type='date' value="{{today | date:'Y-m-d' }}"-->
+            <!--                                   class="form-control hidden" name="date" id="id_date"-->
+            <!--                                   value="{% if request.GET.date %}{{request.GET.date}}{% endif %}"/>-->
+            <!--                        </div>-->
+            <!--                    </form>-->
+            <!--                </div>-->
+            <!--                <div class="col-md-4">-->
+            <!--                    <i class="fa fa-calendar pointer add-user" aria-hidden="true"></i>-->
+            <!--                    <form id="date_form">-->
+            <!--                    <input type="date" name="date" id="datepicker" class="hidden" value="{{today | date:'Y-m-d' }}"-->
+            <!--                    value="{% if request.GET.date %}{{request.GET.date}}{% endif %}">-->
+            <!--                    </form>-->
+            <!--                </div>-->
+
+        </div>
+        <table class="responstable">
+            <tr>
+                <th>Date</th>
+                <th data-th="Driver details"><span>Attendence Status</span></th>
+                <th>In-Time</th>
+                <th>Out-Time</th>
+                <th>Total Hours</th>
+            </tr>
+            {% for log in page_obj %}
+            <tr>
+                <td>{{ log.date }}</td>
+                <td>{{log.status}}</td>
+                <td>{{ log.in_time }}</td>
+                <td>{{ log.out_time }}</td>
+                <td>{{ log.total_hour }}</td>
+            </tr>
+            {% empty %}
+            {% for log in
+            <tr>
+                <td colspan="7">
+                    There are no entries yet
+                </td>
+            </tr>
+            {% endfor %}
+            <!--                <tr>-->
+            <!--                    <td>Steffie</td>-->
+            <!--                    <td>Steffie</td>-->
+            <!--                    <td>Foo</td>-->
+            <!--                    <td>Foo</td>-->
+            <!--                    <td>01/01/1978</td>-->
+            <!--                    <td>Spouse</td>-->
+            <!--                </tr>-->
+
+            <!--                <tr>-->
+            <!--                    <td>Stan</td>-->
+            <!--                    <td>Stan</td>-->
+            <!--                    <td>Stan</td>-->
+            <!--                    <td>Foo</td>-->
+            <!--                    <td>01/01/1994</td>-->
+            <!--                    <td>Son</td>-->
+            <!--                </tr>-->
+
+            <!--                <tr>-->
+            <!--                    <td>Stella</td>-->
+            <!--                    <td>Stella</td>-->
+            <!--                    <td>Foo</td>-->
+            <!--                    <td>Foo</td>-->
+            <!--                    <td>01/01/1992</td>-->
+            <!--                    <td>Daughter</td>-->
+            <!--                </tr>-->
+
+
+        </table>
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+<!--begin modal window-->
+<div class="modal fade" id="images">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header header">
+                <div class="pull-left">User Images</div>
+                <button type="button" class="close" data-dismiss="modal" title="Close"><span class="glyphicon glyphicon-remove"></span></button>
+            </div>
+            <div class="modal-body">
+                <div id="myGallery" class="carousel slide" data-interval="false">
+                    <div class="carousel-inner user-gallery">
+                        {% for image in images %}
+                        <div class="item {% if forloop.counter == 1 %} active{% endif %}"><img src="{{image.image.url}}" alt="item0">
+                            <div class="carousel-caption">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a class="left carousel-control" href="#myGallery" role="button" data-slide="prev"> <span class="glyphicon glyphicon-chevron-left"></span></a> <a class="right carousel-control" href="#myGallery" role="button" data-slide="next"> <span
+                        class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+            </div>
+        </div>
+</div>
+<script>
+    $('td').each(function() {
+     var className = $(this).html().replace(' ', '').toLowerCase();
+     $(this).addClass(className);
+});
+
+</script>
+{% endblock %}

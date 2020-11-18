@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+ <meta http-equiv="refresh" content="10">
+
+<div class="container-large ofh pos-rel bg-white no-padding bg-color margin-top">
+    <div class="container">
+        <div class="col-sm-6 col-md-2" style="height:130px;">
+            <form id="date_form">
+                <div class="form-group">
+                    <!--                                <div class='input-group date' id='datetimepicker10'>-->
+                    <input type='date' value="{{today | date:'Y-m-d' }}"
+                           class="form-control" name="date" id="id_date"
+                           value="{% if request.GET.date %}{{request.GET.date}}{% endif %}"/>
+                    <!--                                    <span class="input-group-addon">-->
+                    <!--                                        <span class="glyphicon glyphicon-calendar">-->
+                    <!--                                        </span>-->
+                    <!--                                    </span>-->
+                    <!--                                </div>-->
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript">
+                            $(function () {
+                                $('#datetimepicker10').datetimepicker({
+                                    viewMode: 'dates',
+                                    format: 'MM/YYYY/DD'
+
+                                });
+                            });
+
+
+        </script>
+    </div>
+
+</div>
+        <div class="container emp-profile">
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="profile-head">
+                                    <h5>
+                                        {{user.first_name }}
+                                    </h5>
+                                    <h6>
+                                        Uid:{{user.Uid}}
+                                    </h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for log in logs %}
+                    <div class="col-md-4">
+                        <div class="profile-work">
+                            <p>Date : {{log.date}}</p>
+                            <a href="">in-time: {{log.in_time}}</a><br/>
+                            <a href="">out-time:{{log.out_time}}</a><br/>
+                            <a href="">total-hours:{{log.total_hours}}</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+
+
+<script>
+
+$("#id_date").change(function(){
+$("#date_form").submit();
+});
+</script>
+
+
+{% endblock %}

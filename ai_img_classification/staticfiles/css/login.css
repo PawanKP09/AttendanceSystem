@@ -1,0 +1,24 @@
+.dimensional-form{
+  padding-top: 15%;
+}
+@media (max-width: 767px){
+  .dimensional-form {
+    padding-top: 40%;
+  }
+}
+.form-submit-border{
+  text-align: center;
+}
+.txtBlue{
+  color: #00689A;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-submit{
+  width: 100%;
+  padding: none !important;
+}
+
+/*.body-class {
+overflow-y:hidden !important;
+}*/

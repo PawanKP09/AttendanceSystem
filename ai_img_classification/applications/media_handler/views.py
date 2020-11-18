@@ -579,7 +579,7 @@ class CaptureView(View):
             return HttpResponse(json.dumps(data1), content_type="application/json")
 
 
-def export_data(request):
+def export_data(self,request):
     print(request)
     response = HttpResponse(content_type='application/ms-excel')
     if request.GET.get("date"):
@@ -609,52 +609,54 @@ def export_data(request):
 
     url = 'http://127.0.0.1:8080/backend/dashboard'
     if request.GET.get("date") and request.GET.get("search"):
-        q = request.GET.get('date')
-        search =request.GET.get('search')
+        q = self.request.GET.get('date')
+        search = self.request.GET.get('search')
         date = datetime.datetime.strptime(q, "%Y-%m-%d").date()
-        PARAMS = {'date': date, "search": search}
+        # PARAMS = {'date': date,"search":search}
         today = date
     elif request.GET.get("date"):
-        q = request.GET.get('date')
+        q = self.request.GET.get('date')
         date = datetime.datetime.strptime(q, "%Y-%m-%d").date()
-        PARAMS = {'date': date}
+        # PARAMS = {'date': date}
         today = date
     elif request.GET.get("search"):
-        q = request.GET.get('search')
+        search = self.request.GET.get('search')
         today = datetime.datetime.today().date()
-        PARAMS = {'search': q, "date": today}
+        # PARAMS = {'search': q,"date":today}
     else:
         today = datetime.datetime.today().date()
-        PARAMS = {'date': today}
-    query = requests.get(url, params=PARAMS)
-    data = query.json()
-    users = data["users"]
-    trained = data["trained"]
-    logs = data['logs']
-    for log in logs:
-        print(type(log["in_time"]))
-        log["in_time"] = datetime.datetime.strptime(log["in_time"], '%H:%M:%S')
-        log["out_time"] = datetime.datetime.strptime(log["out_time"], '%H:%M:%S')
+    if search:
+        logs = Logs.objects.filter(Q(user_obj__first_name__contains=search) | Q(user_obj__Uid__contains=search),
+                                   date__date=today)
+        users = list(User.objects.filter(Q(first_name__contains=search) | Q(Uid__contains=search)).values())
+    else:
+        logs = Logs.objects.filter(date__date=today)
+        users = list(User.objects.values())
+    # for log in logs:
+    #     print(type(log.in_time))
+    #     log.in_time = datetime.datetime.strptime(log.in_time,'%H:%M:%S')
+    #     log.out_time = datetime.datetime.strptime(log.out_time,'%H:%M:%S')
     todays_user = []
-    for i in range(len(users)):
-        if users[i]['is_superuser'] == True:
-            del users[i]
-            break
-    for log in logs:
-        todays_user.append(log["user_obj"])
     for user in users:
-        if user["id"] in todays_user:
+        if user["is_superuser"]:
+            del user
+    for log in logs:
+        todays_user.append(log.user_obj.username)
+    for user in users:
+        if user["username"] in todays_user:
             for log in logs:
-                if log["user_obj"] == user["id"]:
-                    user.update({"status":"present"})
-                    user.update({"in_time": log["in_time"].strftime("%I:%M:%S %p")})
-                    user.update({"out_time": log["out_time"].strftime("%I:%M:%S %p")})
-                    user.update({"total_hours": log["total_hours"]})
+                if log.user_obj.username == user["username"]:
+                    user.update({"in_time": log.in_time})
+                    user.update({"out_time": log.out_time})
+                    user.update({"total_hours": log.total_hours})
+                    user.update({"status": "present"})
         else:
-            user.update({"status": "Absent"})
-            user.update({"in_time": "NA"})
-            user.update({"out_time": "NA"})
-            user.update({"total_hours": "NA"})
+            for log in logs:
+                if log.user_obj.username == user["username"]:
+                    user.update({"in_time": "NA"})
+                    user.update({"out_time": "NA"})
+                    user.update({"total_hours": "NA"})
+                    user.update({"status": "absent"})
 
     entries = ('email', 'username', 'password','id',"is_staff","is_superuser","is_active",'created','updated','timestampmodel_ptr_id',
                'last_login','profile_image','date_joined',"last_name")

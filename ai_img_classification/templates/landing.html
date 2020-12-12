@@ -166,7 +166,7 @@ function deleteuser(id){
                       window.location = "{%url 'dashboard' %}";
               }
            };
-          xhr.open('GET', "http://127.0.0.1:8080/backend/delete-user/?id="+id, true);
+          xhr.open('GET', "/delete-user/?id="+id, true);
           xhr.send()
        }
        catch(error) {

@@ -579,6 +579,24 @@ class CaptureView(View):
             return HttpResponse(json.dumps(data1), content_type="application/json")
 
 
+class DeleteUserView(View):
+    def get(self,request):
+        id = self.request.GET.get("id")
+        user = User.objects.get(id=id)
+        name = user.first_name
+        my_file = pathlib.Path("dataset_faces_v2.1.dat")
+        if my_file.is_file():
+                with open('dataset_faces_v2.1.dat', 'rb') as f:
+                    known_face_encodings = pickle.load(f)
+                    if name in list(known_face_encodings.keys()):
+                        known_face_encodings.pop(name)
+                    else:
+                        pass
+                # with open("dataset_faces_v2.1.dat", "wb") as file:
+                #     pickle.dump(known_face_encodings, file)
+        user.delete()
+        return JsonResponse({"success":"user deleted successfully"})
+
 def export_data(self,request):
     print(request)
     response = HttpResponse(content_type='application/ms-excel')

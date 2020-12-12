@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^upload-images/$', login_required(views.UploadImagesView.as_view()), name="upload-images"),
     url(r'^training/$', views.TrainView.as_view(), name="training"),
     url(r'^capture-images/$', login_required(views.CaptureView.as_view()), name="capture-images"),
+    url(r'^delete-user/$', views.DeleteUserView.as_view(), name="delete-user"),
     url(r'^user-detail/(?P<id>\d+)/$', views.UserLogView.as_view(), name="user-log"),
     url(r'^export-data/$', views.export_data, name='export-data'),
     url(r'^$', login_required(views.DashboardView.as_view()), name="dashboard"),
